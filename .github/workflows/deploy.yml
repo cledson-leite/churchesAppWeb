@@ -56,12 +56,15 @@ jobs:
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
             
             # Verificando se os arquivos foram copiados corretamente
-            echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
-            ls -la /home/ubuntu/churches_app_web/
+            echo "Verificando arquivos no diretório /home/ubuntu/"
+            ls -la
             echo "Diretório atual:"
             pwd
             
             cd /home/ubuntu/churches_app_web/
+            
+            echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
+            ls -la
 
             # Verificar versão do Docker Compose
             echo "Verificando versão do Docker Compose..."
@@ -78,9 +81,8 @@ jobs:
             echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest"
             docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
 
-            echo "Subindo arquivos para EC2..."
-            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+            echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
+            ls -la
 
             echo "Subindo os contêineres com Docker Compose..."
             docker-compose up --build -d  # Cria e inicia os contêineres em segundo plano
