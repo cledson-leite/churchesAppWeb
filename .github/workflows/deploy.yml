@@ -54,6 +54,7 @@ jobs:
           echo "$EC2_SSH_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-            docker pull $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/my-nextjs-app:latest
-            docker-compose up -d
+            cd /home/ubuntu/$REPOSITORY/  
+            docker pull $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:$IMAGE_TAG
+            docker run -d --name $REPOSITORY -p 3000:3000 $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:$IMAGE_TAG
           EOF
