@@ -59,9 +59,10 @@ jobs:
                 echo "Subindo arquivos para EC2..."
                 scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
                 scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-
-                echo "Listando arquivos no diretório /home/ubuntu/"
-                ls /home/ubuntu/
+                
+                echo "Listando arquivos no diretório /home/ubuntu/churches_app_web/"
+                ls -la /home/ubuntu/churches_app_web/
+                
                 cd /home/ubuntu/churches_app_web/
 
                 aws --version || { echo "AWS CLI não está instalada."; exit 1; }
