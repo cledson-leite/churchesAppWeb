@@ -55,8 +55,8 @@ jobs:
           chmod 600 ec2_key.pem
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
             echo "Subindo arquivos para EC2..."
-            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./"${EC2_USER}"/docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./"${EC2_USER}"/nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
             
             # Verificando se os arquivos foram copiados corretamente
             echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
