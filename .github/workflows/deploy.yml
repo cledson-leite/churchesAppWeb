@@ -34,10 +34,10 @@ jobs:
           REPOSITORY=${{ secrets.EC2_REPO }}
           
           # Construir a imagem Docker
-          docker build -t $REPOSITORY .
+          docker build -t churches_app_web .
 
           # Tag a imagem para o ECR
-          docker tag $REPOSITORY:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
+          docker tag churches_app_web:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
           # Push a imagem para o ECR
           docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
@@ -56,7 +56,7 @@ jobs:
               ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
                 echo "Listando arquivos no diretório /home/ubuntu/"
                 ls /home/ubuntu/
-                cd /home/ubuntu/"${REPOSITORY}"/
+                cd /home/ubuntu/churches_app_web/
 
                 aws --version || { echo "AWS CLI não está instalada."; exit 1; }
 
@@ -68,5 +68,5 @@ jobs:
                 echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest"
                 docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
 
-                docker run -d --name "${REPOSITORY}" -p 3000:3000 ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
+                docker run -d --name churches_app_web -p 3000:3000 ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
           EOF
