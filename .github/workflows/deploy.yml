@@ -39,6 +39,9 @@ jobs:
 
           docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
+      - name: List files
+        run: ls -la
+
       - name: SSH to EC2 and deploy
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
