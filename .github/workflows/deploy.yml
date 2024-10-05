@@ -55,6 +55,7 @@ jobs:
           chmod 600 ec2_key.pem
       
           echo Copiando os arquivos do caminho correto
+          scp -i ec2_key.pem -o StrictHostKeyChecking=no /home/runner/work/churchesAppWeb/churchesAppWeb/Dockerfile "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
           scp -i ec2_key.pem -o StrictHostKeyChecking=no /home/runner/work/churchesAppWeb/churchesAppWeb/docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
           scp -i ec2_key.pem -o StrictHostKeyChecking=no /home/runner/work/churchesAppWeb/churchesAppWeb/nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
       
