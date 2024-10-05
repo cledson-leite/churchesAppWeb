@@ -27,20 +27,20 @@ jobs:
       - name: Log in to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and push Docker image
-        run: |
-          ACCOUNT_ID=${{ secrets.EC2_ACC_ID }}
-          REGION=${{ secrets.EC2_REGION }}
-          REPOSITORY=${{ secrets.EC2_REPO }}
+      # - name: Build and push Docker image
+      #   run: |
+      #     ACCOUNT_ID=${{ secrets.EC2_ACC_ID }}
+      #     REGION=${{ secrets.EC2_REGION }}
+      #     REPOSITORY=${{ secrets.EC2_REPO }}
           
-          docker build -t churches_app_web .
+      #     docker build -t churches_app_web .
 
-          docker tag churches_app_web:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
+      #     docker tag churches_app_web:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
-          docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
+      #     docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
-      - name: List files
-        run: ls -a | pwd
+      # - name: List files
+      #   run: ls -a | pwd
 
       - name: SSH to EC2 and deploy
         env:
