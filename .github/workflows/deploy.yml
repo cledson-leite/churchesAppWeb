@@ -53,9 +53,9 @@ jobs:
         run: |
           echo "${EC2_SSH_KEY}" > ec2_key.pem
           chmod 600 ec2_key.pem
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << 'EOF'
-            cd /home/ubuntu/${REPOSITORY}/ 
-            aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
-            docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
-            docker run -d --name ${REPOSITORY} -p 3000:3000 ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << 'EOF'
+            cd /home/ubuntu/"${REPOSITORY}"/ 
+            aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}".dkr.ecr."${REGION}".amazonaws.com
+            docker pull "${ACCOUNT_ID}".dkr.ecr."${REGION}".amazonaws.com/"${REPOSITORY}":latest
+            docker run -d --name "${REPOSITORY}" -p 3000:3000 "${ACCOUNT_ID}".dkr.ecr."${REGION}".amazonaws.com/"${REPOSITORY}":latest
           EOF
