@@ -49,6 +49,7 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           ACCOUNT_ID: ${{ secrets.EC2_ACC_ID }}
           REGION: ${{ secrets.EC2_REGION }}
+          REPOSITORY: ${{ secrets.EC2_REPO }}
         run: |
           echo "$EC2_SSH_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
