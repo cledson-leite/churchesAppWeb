@@ -33,13 +33,10 @@ jobs:
           REGION=${{ secrets.EC2_REGION }}
           REPOSITORY=${{ secrets.EC2_REPO }}
           
-          # Construir a imagem Docker
           docker build -t churches_app_web .
 
-          # Tag a imagem para o ECR
           docker tag churches_app_web:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
-          # Push a imagem para o ECR
           docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
 
       - name: SSH to EC2 and deploy
@@ -68,5 +65,12 @@ jobs:
                 echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest"
                 docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
 
-                docker run -d --name churches_app_web -p 3000:3000 ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
+                scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+                scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+
+                echo "Subindo os contêineres com Docker Compose..."
+                docker-compose up --build -d 
+
+                echo "Verificando status dos contêineres..."
+                docker-compose ps
           EOF
