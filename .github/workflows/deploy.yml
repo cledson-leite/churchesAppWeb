@@ -52,33 +52,38 @@ jobs:
           REPOSITORY: ${{ secrets.EC2_REPO }}
         run: |
           echo "${EC2_SSH_KEY}" > ec2_key.pem
-              chmod 600 ec2_key.pem
-              ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
-                mkdir -p /home/ubuntu/churches_app_web/
+          chmod 600 ec2_key.pem
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
+            echo "Subindo arquivos para EC2..."
+            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+            scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+            
+            # Verificando se os arquivos foram copiados corretamente
+            echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
+            ls -la /home/ubuntu/churches_app_web/
+            echo "Diretório atual:"
+            pwd
+            
+            cd /home/ubuntu/churches_app_web/
 
-                echo "Subindo arquivos para EC2..."
-                scp -i ec2_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-                scp -i ec2_key.pem -o StrictHostKeyChecking=no ./nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-                
-                echo "Listando arquivos no diretório /home/ubuntu/churches_app_web/"
-                ls -la /home/ubuntu/churches_app_web/
-                
-                cd /home/ubuntu/churches_app_web/
+            # Verificar versão do Docker Compose
+            echo "Verificando versão do Docker Compose..."
+            docker-compose --version
 
-                aws --version || { echo "AWS CLI não está instalada."; exit 1; }
+            aws --version || { echo "AWS CLI não está instalada."; exit 1; }
 
-                echo "Account ID: ${ACCOUNT_ID}"
-                echo "Region: ${REGION}"
+            echo "Account ID: ${ACCOUNT_ID}"
+            echo "Region: ${REGION}"
 
-                aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}".dkr.ecr."${REGION}".amazonaws.com
+            # Logar no ECR
+            aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-                echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest"
-                docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/"${REPOSITORY}":latest
+            echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest"
+            docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
 
+            echo "Subindo os contêineres com Docker Compose..."
+            docker-compose up --build -d  # Cria e inicia os contêineres em segundo plano
 
-                echo "Subindo os contêineres com Docker Compose..."
-                docker-compose up --build -d 
-
-                echo "Verificando status dos contêineres..."
-                docker-compose ps
+            echo "Verificando status dos contêineres..."
+            docker-compose ps
           EOF
