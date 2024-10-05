@@ -54,23 +54,20 @@ jobs:
           echo "${EC2_SSH_KEY}" > ec2_key.pem
           chmod 600 ec2_key.pem
       
-          # Verifique o diretório atual
-          pwd
-      
-          # Copiando os arquivos do caminho correto
+          echo Copiando os arquivos do caminho correto
           scp -i ec2_key.pem -o StrictHostKeyChecking=no /home/runner/work/churchesAppWeb/churchesAppWeb/docker-compose.yml "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
           scp -i ec2_key.pem -o StrictHostKeyChecking=no /home/runner/work/churchesAppWeb/churchesAppWeb/nginx.conf "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
       
-          # Verificando se os arquivos foram copiados corretamente
+          echo Verificando se os arquivos foram copiados corretamente
           echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" "ls -la /home/ubuntu/churches_app_web/"
       
-          # Navegando para o diretório correto e subindo os contêineres
+          echo Navegando para o diretório correto e subindo os contêineres
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
             cd /home/ubuntu/churches_app_web/
             pwd
             
-            # Verificar versão do Docker Compose
+            echo Verificar versão do Docker Compose
             echo "Verificando versão do Docker Compose..."
             docker-compose --version
       
