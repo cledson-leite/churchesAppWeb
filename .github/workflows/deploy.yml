@@ -25,8 +25,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -t churches_app/web .
-          docker tag churchesApp-web:latest 329599662537.dkr.ecr.us-east-2.amazonaws.com/churches_app/web
-          docker push 329599662537.dkr.ecr.us-east-2.amazonaws.com/churches_app/web
+          docker tag churchesApp-web:latest ${{ secrets.EC2_ACC_ID }}.dkr.ecr.${{ secrets.EC2_REGION }}.amazonaws.com/${{ secrets.EC2_REPO }}
+          docker push ${{ secrets.EC2_ACC_ID }}.dkr.ecr.${{ secrets.EC2_REGION }}.amazonaws.com/${{ secrets.EC2_REPO }}
 
       - name: SSH to EC2 and deploy
         uses: appleboy/scp-action@master
