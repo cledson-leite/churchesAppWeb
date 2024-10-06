@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV}
     ports:
       - "3000:3000"  # Mapeando a porta 3000 do contêiner para a porta 3000 do host
 
