@@ -12,19 +12,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    strategy:
-        matrix:
-          env: 
-            - name: production
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set NODE_ENV for Production
-        run: |
-          echo "NODE_ENV=production" >> $GITHUB_ENV
     
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -35,15 +25,6 @@ jobs:
 
       - name: Log in to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: List files
-        run: ls -a | pwd
-      
-      - name: Print All Environment Variables
-        run: env
-
-      - name: Inspect docker-compose Configuration
-        run: docker compose -f docker-compose.prod.yml config
 
       - name: SSH to EC2 and deploy
         env:
@@ -66,20 +47,8 @@ jobs:
       
           echo Navegando para o diretório correto e subindo os contêineres
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
-            cd /home/ubuntu/churches_app_web/
-            pwd
-            
-             
-            echo "Running in NODE_ENV: $NODE_ENV"
-            
-            echo "Verificando versão do Docker Compose..."
-            docker compose version
       
             aws --version || { echo "AWS CLI não está instalada."; exit 1; }
-      
-            echo "Account ID: ${ACCOUNT_ID}"
-            echo "Region: ${REGION}"
-            echo "NODE_ENV ${NODE_ENV}""
       
             # Logar no ECR
             aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
@@ -87,12 +56,9 @@ jobs:
             echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest"
             docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
 
-            echo "NODE_ENV ${NODE_ENV}""
 
             echo "Subindo os contêineres com Docker Compose..."
-            docker compose -f docker-compose.prod.yml up --build -d  # Cria e inicia os contêineres em segundo plano
-
-            echo "NODE_ENV ${NODE_ENV}""
+            docker compose up --build -d 
 
             echo "Verificando status dos contêineres..."
             docker compose ps
