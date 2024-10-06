@@ -3,11 +3,11 @@ name: Deploy Next.js to AWS
 on:
   push:
     branches:
-      - production
+      - homologate
 
   pull_request:
     branches:
-      - production
+      - homologate
 
 jobs:
   deploy:
@@ -16,13 +16,13 @@ jobs:
     strategy:
         matrix:
           include:
-            - branch: production
-              environment: production
+            - branch: homologate
+              environment: development
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Set Environment Variables
         run: |
           if [ "${{ matrix.environment }}" = "production" ]; then
@@ -40,7 +40,6 @@ jobs:
 
       - name: Log in to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
-
       - name: List files
         run: ls -a | pwd
 
@@ -53,19 +52,20 @@ jobs:
           REGION: ${{ secrets.EC2_REGION }}
           REPOSITORY: ${{ secrets.EC2_REPO }}
           NODE_ENV: ${{ env.NODE_ENV }}
+
         run: |
           echo "${EC2_SSH_KEY}" > ec2_key.pem
           chmod 600 ec2_key.pem
       
           echo Copiando os arquivos do caminho correto
-          scp -i ec2_key.pem -o StrictHostKeyChecking=no -r /home/runner/work/churchesAppWeb/churchesAppWeb/* "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
+          scp -i ec2_key.pem -o StrictHostKeyChecking=no -r /home/runner/work/churchesAppWeb/churchesAppWeb/* "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_development_web/
           
-          echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" "ls -la /home/ubuntu/churches_app_web/"
+          echo "Verificando arquivos no diretório /home/ubuntu/churches_app_development_web/"
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" "ls -la /home/ubuntu/churches_app_development_web/"
       
           echo Navegando para o diretório correto e subindo os contêineres
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
-            cd /home/ubuntu/churches_app_web/
+            cd /home/ubuntu/churches_app_development_web/
             pwd
             
             echo Verificar versão do Docker Compose
