@@ -15,9 +15,8 @@ jobs:
 
     strategy:
         matrix:
-          include:
-            - branch: homologate
-              environment: development
+          env: 
+            - name: development
 
     steps:
       - name: Checkout code

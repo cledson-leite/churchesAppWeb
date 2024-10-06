@@ -15,9 +15,8 @@ jobs:
 
     strategy:
         matrix:
-          include:
-            - branch: production
-              environment: production
+          env: 
+            - name: production
 
     steps:
       - name: Checkout code
