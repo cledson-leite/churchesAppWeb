@@ -66,13 +66,14 @@ jobs:
             echo "Running in NODE_ENV: $NODE_ENV"
 
             echo "Verificando versão do Docker Compose..."
+
             docker-compose --version
       
             aws --version || { echo "AWS CLI não está instalada."; exit 1; }
       
             echo "Account ID: ${ACCOUNT_ID}"
             echo "Region: ${REGION}"
-            echo "NODE_ENV ${NODE_ENV}""
+            echo "NODE_ENV ${NODE_ENV}"
       
             # Logar no ECR
             aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
