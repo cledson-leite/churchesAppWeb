@@ -80,10 +80,11 @@ jobs:
       
             echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest"
             docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
-      
+            echo "NODE_ENV ${NODE_ENV}"
             echo "Subindo os contêineres com Docker Compose..."
             docker-compose up --build -d  # Cria e inicia os contêineres em segundo plano
-      
+
+            echo "NODE_ENV ${NODE_ENV}"
             echo "Verificando status dos contêineres..."
             docker-compose ps
           EOF
