@@ -30,6 +30,9 @@ jobs:
             echo "NODE_ENV=${{ vars.NODE_ENV_DEVELOPMENT }}" >> $GITHUB_ENV
           fi
 
+      - name: Check NODE_ENV
+        run: echo "Current NODE_ENV is $NODE_ENV"
+    
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
