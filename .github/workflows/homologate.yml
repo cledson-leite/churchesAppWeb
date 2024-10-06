@@ -22,13 +22,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set Environment Variables
+      - name: Set NODE_ENV for Development
         run: |
-          if [ "${{ matrix.environment }}" = "production" ]; then
-            echo "NODE_ENV=${{ vars.NODE_ENV_PRODUCTION }}" >> $GITHUB_ENV
-          else
-            echo "NODE_ENV=${{ vars.NODE_ENV_DEVELOPMENT }}" >> $GITHUB_ENV
-          fi
+          echo "NODE_ENV=development" >> $GITHUB_ENV
 
       - name: Check NODE_ENV
         run: echo "Current NODE_ENV is $NODE_ENV"
