@@ -73,7 +73,7 @@ jobs:
             echo "Running in NODE_ENV: $NODE_ENV"
             
             echo "Verificando versão do Docker Compose..."
-            docker compose --version
+            docker compose version
       
             aws --version || { echo "AWS CLI não está instalada."; exit 1; }
       
