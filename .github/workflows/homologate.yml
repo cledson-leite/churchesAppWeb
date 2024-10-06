@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Set up Docker Compose
+        uses: docker/setup-compose@v2
+        with:
+          version: '2.29.7' 
 
       - name: Set NODE_ENV for Development
         run: |
