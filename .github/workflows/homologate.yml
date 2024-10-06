@@ -27,7 +27,7 @@ jobs:
           echo "NODE_ENV=development" >> $GITHUB_ENV
 
       - name: Check NODE_ENV
-        run: echo "Current NODE_ENV is $NODE_ENV"
+        run: echo "Current NODE_ENV is {{ matrix.environment }}"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
