@@ -38,6 +38,12 @@ jobs:
 
       - name: List files
         run: ls -a | pwd
+      
+      - name: Print All Environment Variables
+        run: env
+
+      - name: Inspect docker-compose Configuration
+        run: docker-compose config
 
       - name: SSH to EC2 and deploy
         env:
