@@ -43,7 +43,7 @@ jobs:
         run: env
 
       - name: Inspect docker-compose Configuration
-        run: docker compose config
+        run: docker compose -f docker-compose.prod.yml config
 
       - name: SSH to EC2 and deploy
         env:
