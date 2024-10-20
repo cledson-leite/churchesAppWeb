@@ -28,9 +28,9 @@ jobs:
       - uses: a7ul/tar-action@v1.1.0
         with:
           command: c
-          cwd: "./"
+          cwd: "/home/runner/work/churchesAppWeb/churchesAppWeb/"
           files: |
-            home/runner/work/churchesAppWeb/churchesAppWeb/.next          # Pasta gerada pela build do Next.js
+            .next          # Pasta gerada pela build do Next.js
             public          # Pasta pública
             captain-definition  # Definição do CapRover
           outPath: deploy.tar
