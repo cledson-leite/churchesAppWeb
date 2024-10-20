@@ -1,0 +1,48 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    branches:
+      - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+
+      - name: Wait for application to be ready
+        run: sleep 30
+      - name: Checkout Cypress repository
+        uses: actions/checkout@v2
+        with:
+          repository: cledson-leite/churchesApp-cypress
+          path: cypress
+
+      - name: Install Cypress dependencies
+        run: |
+          cd cypress
+          npm install
+
+      - name: Run Cypress frontend tests
+        env:
+          BASE_URL: http://localhost:3000
+        run: |
+          cd cypress
+          npx cypress run --config baseUrl=$BASE_URL --spec "cypress/e2e/frontend.spec.cy.js"
