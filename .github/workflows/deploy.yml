@@ -23,7 +23,7 @@ jobs:
 
       - run: npm run build  # Gera a build da aplicação Next.js
 
-      - run: ls -la .next   # Lista os arquivos na pasta .next
+      - run: ls -la .next  && pwd # Lista os arquivos na pasta .next
 
       - uses: a7ul/tar-action@v1.1.0
         with:
