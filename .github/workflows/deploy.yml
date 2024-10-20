@@ -30,8 +30,8 @@ jobs:
           command: c
           cwd: "./"
           files: |
-            .next/          # Pasta gerada pela build do Next.js
-            public/         # Pasta pública
+            .next           # Pasta gerada pela build do Next.js
+            public          # Pasta pública
             captain-definition  # Definição do CapRover
           outPath: deploy.tar
 
