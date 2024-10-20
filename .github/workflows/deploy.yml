@@ -1,11 +1,7 @@
-name: Deploy Next.js to AWS
+name: Deploy to CapRover
 
 on:
   push:
-    branches:
-      - production
-
-  pull_request:
     branches:
       - production
 
@@ -14,76 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.EC2_REGION }}
+          node-version: '20.x'
+          cache: "npm"
 
-      - name: Log in to AWS ECR
-        uses: aws-actions/amazon-ecr-login@v1
+      - run: npm ci  # Instala as dependências
 
-      # - name: Build and push Docker image
-      #   run: |
-      #     ACCOUNT_ID=${{ secrets.EC2_ACC_ID }}
-      #     REGION=${{ secrets.EC2_REGION }}
-      #     REPOSITORY=${{ secrets.EC2_REPO }}
-          
-      #     docker build -t churches_app_web .
+      - run: npm run build  # Gera a build da aplicação Next.js
 
-      #     docker tag churches_app_web:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
+      - uses: a7ul/tar-action@v1.1.0
+        with:
+          command: c
+          cwd: "./"
+          files: |
+            .next/          # Pasta gerada pela build do Next.js
+            public/         # Pasta pública
+            captain-definition  # Definição do CapRover
+          outPath: deploy.tar
 
-      #     docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY:latest
-
-      # - name: List files
-      #   run: ls -a | pwd
-
-      - name: SSH to EC2 and deploy
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          ACCOUNT_ID: ${{ secrets.EC2_ACC_ID }}
-          REGION: ${{ secrets.EC2_REGION }}
-          REPOSITORY: ${{ secrets.EC2_REPO }}
-        run: |
-          echo "${EC2_SSH_KEY}" > ec2_key.pem
-          chmod 600 ec2_key.pem
-      
-          echo Copiando os arquivos do caminho correto
-          scp -i ec2_key.pem -o StrictHostKeyChecking=no -r /home/runner/work/churchesAppWeb/churchesAppWeb/* "${EC2_USER}"@"${EC2_HOST}":/home/ubuntu/churches_app_web/
-          
-          echo "Verificando arquivos no diretório /home/ubuntu/churches_app_web/"
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" "ls -la /home/ubuntu/churches_app_web/"
-      
-          echo Navegando para o diretório correto e subindo os contêineres
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no "${EC2_USER}"@"${EC2_HOST}" << EOF
-            cd /home/ubuntu/churches_app_web/
-            pwd
-            
-            echo Verificar versão do Docker Compose
-            echo "Verificando versão do Docker Compose..."
-            docker-compose --version
-      
-            aws --version || { echo "AWS CLI não está instalada."; exit 1; }
-      
-            echo "Account ID: ${ACCOUNT_ID}"
-            echo "Region: ${REGION}"
-      
-            # Logar no ECR
-            aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-      
-            echo "Puxando a imagem: ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest"
-            docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY}:latest
-      
-            echo "Subindo os contêineres com Docker Compose..."
-            docker-compose up --build -d  # Cria e inicia os contêineres em segundo plano
-      
-            echo "Verificando status dos contêineres..."
-            docker-compose ps
-          EOF
-
+      - name: Deploy App to CapRover
+        uses: caprover/deploy-from-github@v1.0.1
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: '${{ secrets.APP_NAME }}'
+          token: '${{ secrets.APP_TOKEN }}'
